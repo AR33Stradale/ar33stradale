@@ -8,7 +8,7 @@
         <p v-if="loading" class="text-blue-500 text-lg">Loading vehicles...</p>
         <p v-else-if="error" class="text-red-600 text-lg">Error: {{ error }}</p>
         <ul v-else-if="vehicles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <li class="border border-gray-200 p-4 rounded-lg shadow-lg bg-white hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+          <li v-for="vehicle in vehicles" :key="vehicle.id" class="border border-gray-200 p-4 rounded-lg shadow-lg bg-white hover:shadow-xl transition-all duration-300 flex flex-col h-full">
             <div v-if="session && editingVehicleId === vehicle.id && session.user.id === vehicle.user_id">
               <h3 class="text-xl font-semibold text-gray-800 mb-2">Edit Vehicle</h3>
               <form @submit.prevent="updateVehicle" class="grid grid-cols-1 gap-2">
@@ -39,16 +39,16 @@
 
                 <div class="col-span-1 mt-2">
                   <p v-if="editFormError" class="text-red-600 text-sm mb-2">{{ editFormError }}</p>
-                  <button 
-                    type="submit" 
-                    :disabled="updatingVehicle" 
+                  <button
+                    type="submit"
+                    :disabled="updatingVehicle"
                     class="w-full inline-flex justify-center py-1 px-3 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                   >
                     {{ updatingVehicle ? 'Saving...' : 'Save' }}
                   </button>
-                  <button 
-                    type="button" 
-                    @click="cancelEdit" 
+                  <button
+                    type="button"
+                    @click="cancelEdit"
                     class="w-full inline-flex justify-center py-1 px-3 mt-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                   >
                     Cancel
@@ -61,18 +61,18 @@
               <h3 class="text-xl font-semibold text-gray-800">{{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})</h3>
               <p class="text-gray-700 mt-1">${{ vehicle.price ? vehicle.price.toLocaleString() : 'N/A' }}</p>
               <p class="text-sm text-gray-500">{{ vehicle.mileage ? vehicle.mileage.toLocaleString() + ' km' : 'N/A' }}</p>
-             <img v-if="vehicle.main_image_url" :src="vehicle.main_image_url" :alt="`${vehicle.make} ${vehicle.model}`" class="mt-4 w-full h-48 object-cover rounded-md border border-gray-100">
+              <img v-if="vehicle.main_image_url" :src="vehicle.main_image_url" :alt="`${vehicle.make} ${vehicle.model}`" class="mt-4 w-full h-48 object-cover rounded-md border border-gray-100">
               <p v-else class="text-sm text-gray-400 mt-2">No image available</p>
 
               <div v-if="session && session.user.id === vehicle.user_id" class="mt-4 flex space-x-2">
-                <button 
-                  @click="startEditing(vehicle)" 
+                <button
+                  @click="startEditing(vehicle)"
                   class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-1 px-3 rounded-md transition-colors duration-200"
                 >
                   Edit
                 </button>
-                <button 
-                  @click="deleteVehicle(vehicle.id)" 
+                <button
+                  @click="deleteVehicle(vehicle.id)"
                   class="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-3 rounded-md transition-colors duration-200"
                 >
                   Delete
@@ -114,9 +114,9 @@
 
           <div class="col-span-full mt-4">
             <p v-if="formError" class="text-red-600 text-sm mb-2">{{ formError }}</p>
-            <button 
-              type="submit" 
-              :disabled="addingVehicle" 
+            <button
+              type="submit"
+              :disabled="addingVehicle"
               class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               {{ addingVehicle ? 'Adding...' : 'Add Vehicle' }}
@@ -131,7 +131,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '../lib/supabaseClient' // Adjust path for UsedVehiclesView
-// No need for Auth component here, as it's handled by App.vue now
 
 const session = ref(null) // Keep session here as it determines edit/delete visibility
 const vehicles = ref([])
@@ -252,14 +251,15 @@ const updateVehicle = async () => {
         main_image_url: editedImageUrl.value,
       })
       .eq('id', editingVehicleId.value)
-      .eq('user_id', session.value.user.id)
+      .eq('user_id', session.value.user.id) // Ensure only owner can update
 
     if (updateError) throw updateError
 
+    // Update the vehicle in the local array to reflect changes immediately
     const index = vehicles.value.findIndex(v => v.id === editingVehicleId.value)
     if (index !== -1) {
       vehicles.value[index] = {
-        ...vehicles.value[index],
+        ...vehicles.value[index], // Keep other properties
         make: editedMake.value,
         model: editedModel.value,
         year: editedYear.value,
@@ -288,7 +288,7 @@ const deleteVehicle = async (id) => {
       .from('vehicles')
       .delete()
       .eq('id', id)
-      .eq('user_id', session.value.user.id)
+      .eq('user_id', session.value.user.id) // Ensure only owner can delete
 
     if (deleteError) throw deleteError
 
@@ -303,15 +303,18 @@ const deleteVehicle = async (id) => {
 onMounted(() => {
   fetchVehicles(); // Always fetch vehicles on mount
 
+  // Initial session check
   supabase.auth.getSession().then(({ data }) => {
     session.value = data.session
     console.log('UsedVehiclesView.vue: Initial session state after getSession():', session.value);
   })
 
+  // Listen for auth state changes
   supabase.auth.onAuthStateChange((_, _session) => {
     session.value = _session
     console.log('UsedVehiclesView.vue: Auth state changed, new session:', _session);
-    fetchVehicles(); // Re-fetch vehicles when auth state changes
+    // If auth state changes (e.g., login/logout), re-fetch vehicles
+    fetchVehicles();
   })
 })
 </script>
