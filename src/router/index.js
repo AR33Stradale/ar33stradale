@@ -2,7 +2,7 @@
 import { supabase } from '@/lib/supabaseClient' 
 
 // ... other imports ...
-//import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 
 // Import all your view components
