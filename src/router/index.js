@@ -11,7 +11,7 @@ import AboutView from '../views/AboutView.vue'
 import UsedVehiclesView from '../views/UsedVehiclesView.vue' // Our new main vehicle list page
 import VintageLayout from '../views/VintageLayout.vue' // Layout for vintage sub-pages
 import OldTimersView from '../views/OldTimersView.vue'
-import YoungTimersView from '../views/YoungTimersView.vue.vue'
+import YoungTimersView from '../views/YoungTimersView.vue'
 import ServicesLayout from '../views/ServicesLayout.vue' // Layout for services sub-pages
 import TuningView from '../views/TuningView.vue'
 import RestorationInteriorView from '../views/RestorationInteriorView.vue'
