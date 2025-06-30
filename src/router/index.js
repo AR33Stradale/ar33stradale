@@ -36,14 +36,14 @@ const router = createRouter({
       name: 'used-vehicles',
       component: () => import('../views/UsedVehiclesView.vue'),
       // The beforeEnter guard is KEPT here, requiring login for this page.
-      beforeEnter: async (to, from, next) => {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          next() // Allow navigation if session exists
-        } else {
-          next('/') // Redirect to home if no session
-        }
-      }
+      // beforeEnter: async (to, from, next) => {
+       // const { data: { session } } = await supabase.auth.getSession()
+        //if (session) {
+          //next() // Allow navigation if session exists
+       // } else {
+       //   next('/') // Redirect to home if no session
+       // }
+     // }
     },
     // Vintage sub-routes
     {
