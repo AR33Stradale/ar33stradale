@@ -18,10 +18,10 @@
     <div class="relative z-0 min-h-screen flex flex-col">
       <nav class="bg-gradient-to-r from-gray-900 to-black text-white p-4 shadow-xl">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
-          <router-link to="/" class="text-3xl font-extrabold text-white hover:text-gray-200 transition-colors duration-300 mb-4 md:mb-0">
-            <img src="/images/your-logo.png" alt="AR33 Stradale Logo" class="h-12 w-auto inline-block mr-3" />
-            AR33 Stradale
-          </router-link>
+          //<router-link to="/" class="text-3xl font-extrabold text-white hover:text-gray-200 transition-colors duration-300 mb-4 md:mb-0">
+          //  <img src="/images/your-logo.png" alt="AR33 Stradale Logo" class="h-12 w-auto inline-block mr-3" />
+            //AR33 Stradale
+          //</router-link>
 
           <div class="flex flex-col md:flex-row md:space-x-6 items-center text-lg font-medium">
             <router-link
